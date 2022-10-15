@@ -126,6 +126,17 @@
         </style>
 
         <script>
+            function isValidHttpUrl(string) {
+                let url;
+                
+                try {
+                    url = new URL(string);
+                } catch (_) {
+                    return false;  
+                }
+
+                return url.protocol === "http:" || url.protocol === "https:";
+            }
 
             var queryString = _.chain( location.search.slice( 1 ).split( /&/g ) )
                 .map( function ( item ) { if ( item ) return item.split( /=/ ).map( function ( str ) { return decodeURIComponent( str ); } ); } )
@@ -134,7 +145,9 @@
             var name = queryString.name;
 
             var pairing = atob(queryString.pairing);
-            var pairingDefinition = [0, pairing, queryString.notes];
+            var notes = atob(queryString.notes)
+            var isNotesLink = notes && isValidHttpUrl(notes)
+            // var pairingDefinition = [0, pairing, queryString.notes];
 
         </script>
 
@@ -154,10 +167,16 @@
                         <div id="pairing-name"></div>
                         <div id="pairing-details"></div>
                         <script>
-                            document.getElementById('pairing-name').innerText = pairingDefinition[1];
+                            document.getElementById('pairing-name').innerText = pairing;
 
-                            if (pairingDefinition[2]) {
-                                document.getElementById('pairing-details').innerText = pairingDefinition[2];
+                            if (isNotesLink) {
+                                var detailsNode = document.getElementById('pairing-details'); // = '<a href="' + notes + '">More info<\\a>';
+                                var aTag = document.createElement('a');
+                                aTag.setAttribute('href', notes);
+                                aTag.innerText = "More info";
+                                detailsNode.appendChild(aTag);
+                            } else if (notes) {
+                                document.getElementById('pairing-details').innerText = notes;
                             } else {
                                 document.getElementById('pairing-details').style.display = 'none';
                             }

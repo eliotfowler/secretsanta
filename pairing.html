@@ -146,8 +146,10 @@
 
             var pairing = atob(queryString.pairing);
             var notes = atob(queryString.notes)
+            if (notes) {
+                notes = decodeURI(notes)
+            }
             var isNotesLink = notes && isValidHttpUrl(notes)
-            // var pairingDefinition = [0, pairing, queryString.notes];
 
         </script>
 
